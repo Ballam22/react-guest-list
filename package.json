@@ -24,7 +24,6 @@
   "dependencies": {
     "@upleveled/react-scripts": "5.0.13",
     "axios": "^1.7.9",
-    "cors": "^2.8.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sass": "1.84.0"
