@@ -2,6 +2,8 @@ import './App.css'; // Assuming you have a simple CSS file
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
+const baseUrl = 'http://localhost:4000';
+
 const App = () => {
   const [guests, setGuests] = useState([]);
   const [firstName, setFirstName] = useState('');
@@ -51,9 +53,10 @@ const App = () => {
   const toggleAttending = async (id, attending) => {
     setIsToggling(true);
     try {
-      const response = await axios.patch(`http://localhost:4000/guests/${id}`, {
+      const response = await axios.put(`${baseUrl}/guests/${id}`, {
         attending: !attending,
       });
+
       setGuests((prevGuests) =>
         prevGuests.map((guest) => (guest.id === id ? response.data : guest)),
       );
