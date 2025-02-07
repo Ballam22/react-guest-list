@@ -46,6 +46,7 @@ const App = () => {
       firstName.trim() === '' ||
       lastName.trim() === ''
     ) {
+      console.log('addGuest: Invalid input');
       return;
     }
 
@@ -98,7 +99,6 @@ const App = () => {
   return (
     <div className="app">
       <h1>Guest List</h1>
-      {console.log('Loading state:', loading)}
 
       {/* Show "Loading..." when fetching guests */}
       {loading ? (
