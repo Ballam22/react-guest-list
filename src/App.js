@@ -106,23 +106,26 @@ const App = () => {
       ) : (
         <div>
           <div>
-            <label>
-              First name:
-              <input
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                disabled={Boolean(loading) || Boolean(isAdding)}
-              />
-            </label>
-            <label>
-              Last name:
-              <input
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                onKeyDown={addGuest}
-                disabled={Boolean(loading) || Boolean(isAdding)}
-              />
-            </label>
+            {/* Ensure the label is associated correctly with the input */}
+            <label htmlFor="firstName">First name:</label>
+            <input
+              id="firstName"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              disabled={Boolean(loading) || Boolean(isAdding)} // Ensure it's disabled during loading or adding
+            />
+          </div>
+
+          <div>
+            {/* Ensure the label is associated correctly with the input */}
+            <label htmlFor="lastName">Last name:</label>
+            <input
+              id="lastName"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              onKeyDown={addGuest}
+              disabled={Boolean(loading) || Boolean(isAdding)} // Ensure it's disabled during loading or adding
+            />
           </div>
 
           {guests.length === 0 ? (
@@ -159,5 +162,4 @@ const App = () => {
     </div>
   );
 };
-
 export default App;
