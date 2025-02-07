@@ -112,6 +112,7 @@ const App = () => {
               id="firstName"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
+              onKeyDown={addGuest}
               disabled={Boolean(loading) || Boolean(isAdding)} // Ensure it's disabled during loading or adding
             />
           </div>
