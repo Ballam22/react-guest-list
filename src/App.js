@@ -1,4 +1,4 @@
-import './App.css'; // Assuming you have a simple CSS file
+import './App.css';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
@@ -14,9 +14,20 @@ const App = () => {
 
   // Fetch guests from the API
   const fetchGuests = async () => {
+    setLoading(true);
+
+    // Simulate a delay for the loading spinner
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000);
+    });
+
     try {
-      const response = await axios.get('http://localhost:4000/guests');
-      setGuests(response.data);
+      const response = await fetch(`${baseUrl}/guests`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const allGuests = await response.json();
+      setGuests(allGuests);
     } catch (error) {
       console.error('Error fetching guests:', error);
     } finally {
@@ -30,11 +41,17 @@ const App = () => {
 
   // Add a new guest
   const addGuest = async (event) => {
-    if (event.key !== 'Enter' || !firstName || !lastName) return;
+    if (
+      event.key !== 'Enter' ||
+      firstName.trim() === '' ||
+      lastName.trim() === ''
+    ) {
+      return;
+    }
 
     setIsAdding(true);
     try {
-      const response = await axios.post('http://localhost:4000/guests', {
+      const response = await axios.post(`${baseUrl}/guests`, {
         firstName,
         lastName,
         attending: false, // Set new guests as 'not attending' by default
@@ -50,15 +67,16 @@ const App = () => {
   };
 
   // Toggle the attending status of a guest
-  const toggleAttending = async (id, attending) => {
+  const toggleAttending = async (id, currentStatus) => {
     setIsToggling(true);
     try {
-      const response = await axios.put(`${baseUrl}/guests/${id}`, {
-        attending: !attending,
+      await axios.put(`${baseUrl}/guests/${id}`, {
+        attending: !currentStatus,
       });
-
       setGuests((prevGuests) =>
-        prevGuests.map((guest) => (guest.id === id ? response.data : guest)),
+        prevGuests.map((guest) =>
+          guest.id === id ? { ...guest, attending: !currentStatus } : guest,
+        ),
       );
     } catch (error) {
       console.error('Error toggling attending status:', error);
@@ -70,7 +88,7 @@ const App = () => {
   // Remove a guest
   const removeGuest = async (id) => {
     try {
-      await axios.delete(`http://localhost:4000/guests/${id}`);
+      await axios.delete(`${baseUrl}/guests/${id}`);
       setGuests((prevGuests) => prevGuests.filter((guest) => guest.id !== id));
     } catch (error) {
       console.error('Error removing guest:', error);
@@ -80,8 +98,11 @@ const App = () => {
   return (
     <div className="app">
       <h1>Guest List</h1>
+      {console.log('Loading state:', loading)}
+
+      {/* Show "Loading..." when fetching guests */}
       {loading ? (
-        <p>Loading...</p>
+        <p data-test-id="loading">Loading...</p>
       ) : (
         <div>
           <div>
@@ -90,7 +111,7 @@ const App = () => {
               <input
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                disabled={isAdding}
+                disabled={Boolean(loading) || Boolean(isAdding)}
               />
             </label>
             <label>
@@ -99,7 +120,7 @@ const App = () => {
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 onKeyDown={addGuest}
-                disabled={isAdding}
+                disabled={Boolean(loading) || Boolean(isAdding)}
               />
             </label>
           </div>
