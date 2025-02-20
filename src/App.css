@@ -1,71 +1,73 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-  background-color: #a25a5a;
-}
-
-.app {
-  max-width: 600px;
-  margin: 0 auto;
-  background: rgb(209, 80, 80);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
+/* App.css */
+.App {
   text-align: center;
-  color: #333333;
+  padding: 20px;
 }
 
-label {
+.App h1 {
+  font-size: 3rem; /* Very big heading */
+  margin-bottom: 20px;
+  color: #161d24;
+}
+
+/* Form styling */
+.AddGuestForm {
+  margin-bottom: 30px;
+}
+
+.AddGuestForm label {
   display: block;
   margin-bottom: 10px;
+  font-size: 1.5rem; /* Big labels */
   font-weight: bold;
+  color: #131517;
 }
 
-input {
-  width: calc(100% - 20px);
+.AddGuestForm input {
+  width: 100%;
+  max-width: 300px;
   padding: 10px;
-  margin: 5px 0;
-  border: 1px solid #ccc;
+  font-size: 1.2rem; /* Big input text */
+  margin-bottom: 15px;
+  border: 2px solid #0e1012;
   border-radius: 5px;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-.guest {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #ffffff9e;
-  padding: 10px;
-  border: 1px solid #ddd;
-  margin: 10px 0;
-  border-radius: 5px;
-}
-
-.guest span {
-  flex-grow: 1;
-}
-
-button {
-  background: #c40a0aeb;
-  color: white;
+.AddGuestForm button {
+  padding: 10px 20px;
+  font-size: 1.2rem; /* Big button text */
+  background-color: #0e1113;
+  color: rgb(255, 255, 255);
   border: none;
-  padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 0.3s ease;
 }
 
-button:hover {
-  background: #cc0000;
+.AddGuestForm button:hover {
+  background-color: #272829;
 }
 
-input[type='checkbox'] {
-  margin-right: 20px;
+/* Guest list styling */
+.GuestList {
+  margin-top: 20px;
+}
+.GuestList button {
+  font-size: 1.4rem; /* Even bigger font size */
+  padding: 10px 20px; /* Larger padding for a bigger button */
+}
+.GuestList span {
+  font-size: 1.8rem; /* Even bigger font size */
+}
+/* Alternative: CSS Grid Layout */
+.GuestList div[data-test-id='guest'] {
+  display: grid;
+  grid-template-columns: 1fr auto auto; /* Name, Checkbox, Button */
+  align-items: center; /* Vertically center items */
+  gap: 20px; /* Spacing between items */
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
