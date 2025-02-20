@@ -12,20 +12,23 @@ function App() {
 
   // Load guests from API on component mount
   useEffect(() => {
-    const fetchGuests = () => {
-      axios
-        .get(API_URL)
-        .then((response) => {
+    const fetchGuests = async () => {
+      try {
+        const response = await axios.get(API_URL);
+        // Introduce an artificial delay for the loading indicator
+        setTimeout(() => {
           setGuests(response.data);
           setLoading(false);
-        })
-        .catch((error) => {
-          console.error('Error fetching guests:', error);
-          setLoading(false);
-        });
+        }, 1000);
+      } catch (error) {
+        console.error('Error fetching guests:', error);
+        setLoading(false);
+      }
     };
 
-    fetchGuests(); // Call the function
+    fetchGuests().catch((error) =>
+      console.error('Unhandled error in fetchGuests:', error),
+    );
   }, []);
 
   // Add a new guest
@@ -75,9 +78,8 @@ function App() {
     <div className="App">
       <div className="container">
         <h1>Guest List</h1>
-        {/* Display loading text during the API request */}
-        {loading && <p className="Loading">Loading...</p>}
-        {/* Always render the form, but disable inputs if loading */}
+        {/* Show loading text if loading is true */}
+        {loading && <p data-test-id="loading">Loading...</p>}
         <AddGuestForm addGuest={addGuest} loading={loading} />
         <h2>Guests</h2>
         <GuestList
