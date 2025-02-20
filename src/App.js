@@ -74,20 +74,17 @@ function App() {
   return (
     <div className="App">
       <div className="container">
-        <h1> Guest List </h1>
-        {loading ? (
-          <p className="Loading">Loading...</p> // Show loading message
-        ) : (
-          <>
-            <AddGuestForm addGuest={addGuest} loading={loading} />
-            <h2>Guests</h2>
-            <GuestList
-              guests={guests}
-              deleteGuest={deleteGuest}
-              toggleAttending={toggleAttending}
-            />
-          </>
-        )}
+        <h1>Guest List</h1>
+        {/* Display loading text during the API request */}
+        {loading && <p className="Loading">Loading...</p>}
+        {/* Always render the form, but disable inputs if loading */}
+        <AddGuestForm addGuest={addGuest} loading={loading} />
+        <h2>Guests</h2>
+        <GuestList
+          guests={guests}
+          deleteGuest={deleteGuest}
+          toggleAttending={toggleAttending}
+        />
       </div>
     </div>
   );

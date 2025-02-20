@@ -13,31 +13,39 @@ function AddGuestForm({ addGuest, loading }) {
     }
   };
 
+  const handleLastNameKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSubmit(e);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="AddGuestForm">
-      <label>
-        First name:
+      <div>
+        <label htmlFor="firstNameInput">First name</label>
         <input
-          name="first-name" // Add name attribute
+          id="firstNameInput"
+          name="first-name"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           disabled={loading}
           required
-          autoComplete="given-name" // Optional: Improve autofill
+          autoComplete="given-name"
         />
-      </label>
-      <label>
-        Last name:
+      </div>
+      <div>
+        <label htmlFor="lastNameInput">Last name</label>
         <input
-          name="last-name" // Add name attribute
+          id="lastNameInput"
+          name="last-name"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
+          onKeyDown={handleLastNameKeyDown}
           disabled={loading}
           required
-          autoComplete="family-name" // Optional: Improve autofill
+          autoComplete="family-name"
         />
-      </label>
+      </div>
       <button disabled={loading}>Add Guest</button>
     </form>
   );
