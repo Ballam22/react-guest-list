@@ -15,19 +15,9 @@ const App = () => {
   // Fetch guests from the API
   const fetchGuests = async () => {
     setLoading(true);
-
-    // Simulate a delay for the loading spinner
-    await new Promise((resolve) => {
-      setTimeout(resolve, 1000);
-    });
-
     try {
-      const response = await fetch(`${baseUrl}/guests`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const allGuests = await response.json();
-      setGuests(allGuests);
+      const response = await axios.get(`${baseUrl}/guests`);
+      setGuests(response.data);
     } catch (error) {
       console.error('Error fetching guests:', error);
     } finally {
@@ -39,44 +29,51 @@ const App = () => {
     fetchGuests().catch((error) => console.error('Error in useEffect:', error));
   }, []);
 
-  // Add a new guest
-  const addGuest = async (event) => {
-    if (
-      event.key !== 'Enter' ||
-      firstName.trim() === '' ||
-      lastName.trim() === ''
-    ) {
-      console.log('addGuest: Invalid input');
-      return;
-    }
-
-    setIsAdding(true);
-    try {
-      const response = await axios.post(`${baseUrl}/guests`, {
-        firstName,
-        lastName,
-        attending: false, // Set new guests as 'not attending' by default
-      });
-      setGuests((prevGuests) => [...prevGuests, response.data]);
-      setFirstName('');
-      setLastName('');
-    } catch (error) {
-      console.error('Error adding guest:', error);
-    } finally {
-      setIsAdding(false);
+  // Add a new guest when pressing Enter in the last name input
+  const handleLastNameKeyDown = async (event) => {
+    if (event.key === 'Enter') {
+      // Validate that both fields are filled
+      if (firstName.trim() === '' || lastName.trim() === '') {
+        console.log('Invalid input: both fields are required.');
+        return;
+      }
+      setIsAdding(true);
+      try {
+        const response = await axios.post(`${baseUrl}/guests`, {
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          attending: false, // New guests are not attending by default
+        });
+        // Append the new guest to the list
+        setGuests((prevGuests) => [...prevGuests, response.data]);
+        // Clear both fields
+        setFirstName('');
+        setLastName('');
+      } catch (error) {
+        console.error('Error adding guest:', error);
+      } finally {
+        setIsAdding(false);
+      }
     }
   };
 
-  // Toggle the attending status of a guest
+  // Toggle the attending status for a guest
   const toggleAttending = async (id, currentStatus) => {
     setIsToggling(true);
     try {
-      await axios.put(`${baseUrl}/guests/${id}`, {
-        attending: !currentStatus,
-      });
+      // Retrieve the full guest object from state
+      const guest = guests.find((g) => g.id === id);
+
+      console.log('toggeling guest:', guest);
+
+      // Exclude the id from the object sent to the API
+      const { id: guestId, ...guestData } = guest;
+      const updatedGuest = { ...guestData, attending: !currentStatus };
+
+      await axios.put(`${baseUrl}/guests/${id}`, updatedGuest);
       setGuests((prevGuests) =>
-        prevGuests.map((guest) =>
-          guest.id === id ? { ...guest, attending: !currentStatus } : guest,
+        prevGuests.map((g) =>
+          g.id === id ? { ...g, attending: !currentStatus } : g,
         ),
       );
     } catch (error) {
@@ -99,68 +96,70 @@ const App = () => {
   return (
     <div className="app">
       <h1>Guest List</h1>
-
-      {/* Show "Loading..." when fetching guests */}
       {loading ? (
         <p data-test-id="loading">Loading...</p>
       ) : (
         <div>
-          <div>
-            {/* Ensure the label is associated correctly with the input */}
-            <label htmlFor="firstName">First name:</label>
+          <div className="input-container">
+            <label htmlFor="firstName">First name</label>
             <input
               id="firstName"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              onKeyDown={addGuest}
-              disabled={Boolean(loading) || Boolean(isAdding)} // Ensure it's disabled during loading or adding
+              disabled={isAdding}
             />
           </div>
 
-          <div>
-            {/* Ensure the label is associated correctly with the input */}
-            <label htmlFor="lastName">Last name:</label>
+          <div className="input-container">
+            <label htmlFor="lastName">Last name</label>
             <input
               id="lastName"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              onKeyDown={addGuest}
-              disabled={Boolean(loading) || Boolean(isAdding)} // Ensure it's disabled during loading or adding
+              onKeyDown={handleLastNameKeyDown}
+              disabled={isAdding}
             />
           </div>
 
           {guests.length === 0 ? (
             <p>No guests found. Add a guest to get started!</p>
           ) : (
-            guests.map((guest) => (
-              <div
-                key={`guest-${guest.id}`}
-                data-test-id="guest"
-                className="guest-item"
-              >
-                <span>
-                  {guest.firstName} {guest.lastName}
-                </span>
-                <input
-                  type="checkbox"
-                  checked={guest.attending}
-                  onChange={() => toggleAttending(guest.id, guest.attending)}
-                  disabled={isToggling}
-                  aria-label={`${guest.firstName} ${guest.lastName} attending status`}
-                />
-                <button
-                  onClick={() => removeGuest(guest.id)}
-                  disabled={isToggling}
-                  aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
+            <div className="guest-list">
+              {guests.map((guest) => (
+                <div
+                  key={`guest-${guest.id}`}
+                  data-test-id="guest"
+                  className="guest-item"
                 >
-                  Remove
-                </button>
-              </div>
-            ))
+                  <span>
+                    {guest.firstName} {guest.lastName}
+                  </span>
+                  <div className="guest-actions">
+                    <input
+                      type="checkbox"
+                      checked={guest.attending}
+                      onChange={() =>
+                        toggleAttending(guest.id, guest.attending)
+                      }
+                      disabled={isToggling}
+                      aria-label={`${guest.firstName} ${guest.lastName} attending status`}
+                    />
+                    <button
+                      onClick={() => removeGuest(guest.id)}
+                      aria-label={`Remove ${guest.firstName} ${guest.lastName}`}
+                      className="remove-button"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}
     </div>
   );
 };
+
 export default App;
