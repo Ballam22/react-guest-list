@@ -11,6 +11,8 @@ function GuestList({ guests, deleteGuest, toggleAttending }) {
             checked={guest.attending}
             onChange={() => toggleAttending(guest.id)}
             aria-label={`${guest.firstName} ${guest.lastName} attending status`}
+            name={`${guest.firstName}-${guest.lastName}-attending`} // Add name attribute
+            id={`${guest.firstName}-${guest.lastName}-attending`} // Add id attribute
           />
           <button
             onClick={() => deleteGuest(guest.id)}

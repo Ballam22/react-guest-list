@@ -1,6 +1,6 @@
-import './App.css'; // Import the App.css file
+import './App.css';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddGuestForm from './AddGuestForm';
 import GuestList from './GuestList';
 
@@ -74,12 +74,13 @@ function App() {
   return (
     <div className="App">
       <div className="container">
-        <h1>Guest List</h1>
+        <h1> Guest List </h1>
         {loading ? (
-          <p className="Loading">Loading...</p>
+          <p className="Loading">Loading...</p> // Show loading message
         ) : (
           <>
-            <AddGuestForm addGuest={addGuest} />
+            <AddGuestForm addGuest={addGuest} loading={loading} />
+            <h2>Guests</h2>
             <GuestList
               guests={guests}
               deleteGuest={deleteGuest}
